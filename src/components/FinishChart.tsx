@@ -6,6 +6,30 @@ interface FinishChartProps {
   data: DataItem[];
 }
 
+interface PieLabelRenderProps {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  percent: number;
+}
+
+interface LegendEntry {
+  value: string;
+  color: string;
+}
+
+interface LegendProps {
+  payload?: LegendEntry[];
+}
+
+interface TooltipPayload {
+  payload: {
+    count: number;
+  };
+}
+
 const COLORS = [
   'hsl(var(--chart-1))',
   'hsl(var(--chart-2))',
@@ -33,7 +57,7 @@ export const FinishChart = ({ data }: FinishChartProps) => {
     }))
     .sort((a, b) => b.value - a.value);
 
-  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
     const RADIAN = Math.PI / 180;
     const radius = outerRadius + 25;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -56,11 +80,11 @@ export const FinishChart = ({ data }: FinishChartProps) => {
     );
   };
 
-  const renderCustomLegend = (props: any) => {
+  const renderCustomLegend = (props: LegendProps) => {
     const { payload } = props;
     return (
       <div className="flex flex-wrap gap-2 justify-center mt-4 px-2">
-        {payload.map((entry: any, index: number) => (
+        {payload?.map((entry: LegendEntry, index: number) => (
           <div key={`legend-${index}`} className="flex items-center gap-1.5 text-xs">
             <div
               className="w-3 h-3 rounded-sm flex-shrink-0"
@@ -105,7 +129,7 @@ export const FinishChart = ({ data }: FinishChartProps) => {
                 borderRadius: '8px',
                 fontSize: '12px'
               }}
-              formatter={(value: number, name: string, props: any) => [
+              formatter={(value: number, name: string, props: TooltipPayload) => [
                 `${value.toFixed(2)} m² (${props.payload.count} itens)`,
                 'Área Total'
               ]}
